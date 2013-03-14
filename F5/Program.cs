@@ -13,22 +13,21 @@ namespace F5
     internal class Program
     {
         private string _testSQLResultContains;
-        private const string DefConnStr = "AliveDB_Focker";
+        private const string DefConnStr = "AliveDB";
         private const string DefTestSQL = "Select @@version;";
         private const string DefTestSQLResultContains = "Microsoft";
         public static string ConnStr
         { get
         {
-            var foo = ConfigurationManager.AppSettings.Get("F5.DBTest");
-            return (foo ?? DefConnStr);
+            return ( DefConnStr);
         }
         }
 
         public static string TestSQL
-        { get { return (ConfigurationManager.AppSettings.Get("TestSQL") ?? DefTestSQL); } }
+        { get { return ( DefTestSQL); } }
 
         public static string TestSQLResultContains
-        { get { return (ConfigurationManager.AppSettings.Get("TestSQLResultContains") ?? DefTestSQLResultContains); } }
+        { get { return ( DefTestSQLResultContains); } }
 
         private static void Main(string[] args)
         {
