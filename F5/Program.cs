@@ -3,16 +3,17 @@ using System.Collections.Generic;
 using System.Data.SqlClient;
 using System.Linq;
 using System.Text;
-using System.Configuration;
 using System.Collections;
 using System.Collections.Specialized;
 using System.Diagnostics;
+using System.Xml;
+using System.Xml.Linq;
 
 namespace F5
 {
     internal class Program
     {
-        private string _testSQLResultContains;
+
         private const string DefConnStr = "AliveDB";
         private const string DefTestSQL = "Select @@version;";
         private const string DefTestSQLResultContains = "Microsoft";
@@ -34,10 +35,15 @@ namespace F5
             Console.WriteLine("\r\n\r\n");
             Console.WriteLine("<html>");
             Console.WriteLine("<h1>Check IIS</h1>");
-            
+            foreach (DictionaryEntry var in Environment.GetEnvironmentVariables())
+                Console.WriteLine("<hr><b>{0}</b>: {1}", var.Key, var.Value);
+            Console.WriteLine("<br>");
+            Console.WriteLine("<h1>Check DB</h1>");
+            Console.WriteLine("track writing ");
+            Console.WriteLine(ReadConnectionStrings());
             if (TestDB( ReadConnectionStrings()))
             {
-                Console.WriteLine("<div>");
+                Console.WriteLine("<div color=red>");
                     Console.WriteLine("Alive");
                 Console.WriteLine("</div>");
             }
@@ -46,16 +52,35 @@ namespace F5
 
         public static string ReadConnectionStrings()
         {
-            ConnectionStringSettingsCollection connections =
-                ConfigurationManager.ConnectionStrings;
-            return connections[ConnStr].ConnectionString;
+            string cnStr="";
+            //PATH_TRANSLATED: P:\inetpub\wwwroot\mvc1 
+
+            // SERVER_NAME: localhost 
+
+            // SCRIPT_NAME: /cgi/F5.exe 
+            //ConnectionStringSettingsCollection connections =
+            //    ConfigurationManager.ConnectionStrings;
+            //return connections[ConnStr].ConnectionString;
+            XDocument doc = XDocument.Load(@"P:\inetpub\wwwroot\cgi\F5.exe.config");
+            var cnElement = doc.Elements("configuration").Elements("connectionStrings");
+            var cn = cnElement.ElementAt(0);
+            var foo = cn.Element("add");
+            var fun = foo.Attribute("connectionString");
+            cnStr = fun.Value;  
+            Console.WriteLine("<div");
+            Console.WriteLine("Here comes connectionstring: <br>" );
+                    Console.WriteLine(cnStr);
+                Console.WriteLine("</div>");
+                Console.WriteLine("<br>");
+            
+            return cnStr;
         }
 
-        public static bool TestDB(string connectionString)
+        public static bool TestDB(string cnstr)
         {
             bool dbWorks = false;
             using (var connection =
-                new SqlConnection(connectionString))
+                new SqlConnection(cnstr))
             {
                 var command = new SqlCommand(TestSQL, connection);
                 connection.Open();
