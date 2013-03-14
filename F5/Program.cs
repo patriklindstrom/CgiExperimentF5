@@ -1,20 +1,77 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Generic;
+using System.Data.SqlClient;
 using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
+using System.Configuration;
+using System.Collections;
+using System.Collections.Specialized;
+using System.Diagnostics;
 
 namespace F5
 {
-    class Program
+    internal class Program
     {
-        static void Main(string[] args)
+        private string _testSQLResultContains;
+        private const string DefConnStr = "AliveDB_Focker";
+        private const string DefTestSQL = "Select @@version;";
+        private const string DefTestSQLResultContains = "Microsoft";
+        public static string ConnStr
+        { get
+        {
+            var foo = ConfigurationManager.AppSettings.Get("F5.DBTest");
+            return (foo ?? DefConnStr);
+        }
+        }
+
+        public static string TestSQL
+        { get { return (ConfigurationManager.AppSettings.Get("TestSQL") ?? DefTestSQL); } }
+
+        public static string TestSQLResultContains
+        { get { return (ConfigurationManager.AppSettings.Get("TestSQLResultContains") ?? DefTestSQLResultContains); } }
+
+        private static void Main(string[] args)
         {
             Console.WriteLine("\r\n\r\n");
-            Console.WriteLine("<h1>Environment Variables</h1>");
-            foreach (DictionaryEntry var in Environment.GetEnvironmentVariables())
-                Console.WriteLine("<hr><b>{0}</b>: {1}", var.Key, var.Value);
+            Console.WriteLine("<html>");
+            Console.WriteLine("<h1>Check IIS</h1>");
+            
+            if (TestDB( ReadConnectionStrings()))
+            {
+                Console.WriteLine("<div>");
+                    Console.WriteLine("Alive");
+                Console.WriteLine("</div>");
+            }
+            Console.WriteLine("</html>");
+        }
+
+        public static string ReadConnectionStrings()
+        {
+            ConnectionStringSettingsCollection connections =
+                ConfigurationManager.ConnectionStrings;
+            return connections[ConnStr].ConnectionString;
+        }
+
+        public static bool TestDB(string connectionString)
+        {
+            bool dbWorks = false;
+            using (var connection =
+                new SqlConnection(connectionString))
+            {
+                var command = new SqlCommand(TestSQL, connection);
+                connection.Open();
+                var qResult = command.ExecuteScalar();
+                if (qResult != null)
+                {
+                    string qResultStr = qResult.ToString();
+                    if (qResultStr.Contains(TestSQLResultContains))
+                    {
+                        dbWorks = true;
+                    }
+                }
+                connection.Close();
+                return dbWorks;
+            }
         }
     }
 }
