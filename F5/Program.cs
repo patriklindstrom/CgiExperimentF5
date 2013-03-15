@@ -41,7 +41,8 @@ namespace F5
             Console.WriteLine("<h1>Check DB</h1>");
             Console.WriteLine("track writing ");
             Console.WriteLine(ReadConnectionStrings());
-            if (TestDB( ReadConnectionStrings()))
+          //  if (TestDB( ReadConnectionStrings()))
+            if(true)
             {
                 Console.WriteLine("<div color=red>");
                     Console.WriteLine("Alive");
@@ -52,7 +53,7 @@ namespace F5
 
         public static string ReadConnectionStrings()
         {
-            string cnStr="";
+            string cnStr = @"data source=Herkules\Dev;initial catalog=HaxitDB;user=sa;password=ABOverT9";
             //PATH_TRANSLATED: P:\inetpub\wwwroot\mvc1 
 
             // SERVER_NAME: localhost 
@@ -61,17 +62,17 @@ namespace F5
             //ConnectionStringSettingsCollection connections =
             //    ConfigurationManager.ConnectionStrings;
             //return connections[ConnStr].ConnectionString;
-            XDocument doc = XDocument.Load(@"P:\inetpub\wwwroot\cgi\F5.exe.config");
-            var cnElement = doc.Elements("configuration").Elements("connectionStrings");
-            var cn = cnElement.ElementAt(0);
-            var foo = cn.Element("add");
-            var fun = foo.Attribute("connectionString");
-            cnStr = fun.Value;  
-            Console.WriteLine("<div");
-            Console.WriteLine("Here comes connectionstring: <br>" );
-                    Console.WriteLine(cnStr);
-                Console.WriteLine("</div>");
-                Console.WriteLine("<br>");
+            //XDocument doc = XDocument.Load(@"P:\inetpub\wwwroot\cgi\F5.exe.config");
+            //var cnElement = doc.Elements("configuration").Elements("connectionStrings");
+            //var cn = cnElement.ElementAt(0);
+            //var foo = cn.Element("add");
+            //var fun = foo.Attribute("connectionString");
+            //cnStr = fun.Value;  
+            //Console.WriteLine("<div");
+            //Console.WriteLine("Here comes connectionstring: <br>" );
+            //        Console.WriteLine(cnStr);
+            //    Console.WriteLine("</div>");
+            //    Console.WriteLine("<br>");
             
             return cnStr;
         }
