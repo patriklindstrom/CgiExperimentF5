@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Data.SqlClient;
 using System.Linq;
+using System.Net.NetworkInformation;
 using System.Text;
 using System.Collections;
 using System.Collections.Specialized;
@@ -34,6 +35,8 @@ namespace F5
         {
             Console.WriteLine("\r\n\r\n");
             Console.WriteLine("<html>");
+            Ping("sunet.se");
+            
             Console.WriteLine("<h1>Check IIS</h1>");
             foreach (DictionaryEntry var in Environment.GetEnvironmentVariables())
                 Console.WriteLine("<hr><b>{0}</b>: {1}", var.Key, var.Value);
@@ -96,6 +99,23 @@ namespace F5
                 }
                 connection.Close();
                 return dbWorks;
+            }
+
+
+        }
+        public static void Ping(string hostname)
+        {
+            //Create ping object
+            Ping netMon = new Ping();
+
+            //Ping host (this will block until complete)
+            var response = netMon.Send(hostname, 4);
+
+            //Process ping response
+            if (response != null)
+            {
+                string pingTime = response.RoundtripTime.ToString();
+                Console.WriteLine(pingTime);
             }
         }
     }
