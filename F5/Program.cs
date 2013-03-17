@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Configuration;
 using System.Data.SqlClient;
 using System.Linq;
 using System.Net.NetworkInformation;
@@ -10,20 +11,16 @@ using System.Diagnostics;
 using System.Xml;
 using System.Xml.Linq;
 
+
 namespace F5
 {
     internal class Program
     {
 
-        private const string DefConnStr = "AliveDB";
+
         private const string DefTestSQL = "Select @@version;";
         private const string DefTestSQLResultContains = "Microsoft";
-        public static string ConnStr
-        { get
-        {
-            return ( DefConnStr);
-        }
-        }
+        
 
         public static string TestSQL
         { get { return ( DefTestSQL); } }
@@ -33,90 +30,85 @@ namespace F5
 
         private static void Main(string[] args)
         {
-            Console.WriteLine("\r\n\r\n");
+           Console.WriteLine("\r\n\r\n");
             Console.WriteLine("<html>");
-            Ping("sunet.se");
-            
-            Console.WriteLine("<h1>Check IIS</h1>");
-            foreach (DictionaryEntry var in Environment.GetEnvironmentVariables())
-                Console.WriteLine("<hr><b>{0}</b>: {1}", var.Key, var.Value);
-            Console.WriteLine("<br>");
-            Console.WriteLine("<h1>Check DB</h1>");
-            Console.WriteLine("track writing ");
-            Console.WriteLine(ReadConnectionStrings());
-          //  if (TestDB( ReadConnectionStrings()))
-            if(true)
+            if (Environment.GetEnvironmentVariable("QUERY_STRING").Contains( "debug=true"))
             {
-                Console.WriteLine("<div color=red>");
+                Console.WriteLine("<h1>Check IIS</h1>");
+                foreach (DictionaryEntry var in Environment.GetEnvironmentVariables())
+                    Console.WriteLine("<hr><b>{0}</b>: {1}", var.Key, var.Value);
+                Console.WriteLine("<br>");
+                if (Environment.GetEnvironmentVariable("QUERY_STRING").Contains("ping"))
+                {
+                    Console.WriteLine("<h1>Check ping </h1>");
+                    Console.WriteLine("Responstime ms to sunet.se:{0}", Ping("sunet.se"));
+                }
+                Console.WriteLine("<br>");
+                Console.WriteLine("<h1>Check DB</h1>");
+                Console.WriteLine(ReadConnectionStrings());
+            }
+
+                if (TestDB( ReadConnectionStrings()))
+                {
+                Console.WriteLine("<div style='color:green;'>");
                     Console.WriteLine("Alive");
                 Console.WriteLine("</div>");
-            }
+                }
+                else
+                {
+                    Console.WriteLine("<div style='color:red;'>");
+                    Console.WriteLine("Dead");
+                    Console.WriteLine("</div>");
+                    
+                }
             Console.WriteLine("</html>");
         }
 
         public static string ReadConnectionStrings()
         {
-            string cnStr = @"data source=Herkules\Dev;initial catalog=HaxitDB;user=sa;password=ABOverT9";
-            //PATH_TRANSLATED: P:\inetpub\wwwroot\mvc1 
-
-            // SERVER_NAME: localhost 
-
-            // SCRIPT_NAME: /cgi/F5.exe 
-            //ConnectionStringSettingsCollection connections =
-            //    ConfigurationManager.ConnectionStrings;
-            //return connections[ConnStr].ConnectionString;
-            //XDocument doc = XDocument.Load(@"P:\inetpub\wwwroot\cgi\F5.exe.config");
-            //var cnElement = doc.Elements("configuration").Elements("connectionStrings");
-            //var cn = cnElement.ElementAt(0);
-            //var foo = cn.Element("add");
-            //var fun = foo.Attribute("connectionString");
-            //cnStr = fun.Value;  
-            //Console.WriteLine("<div");
-            //Console.WriteLine("Here comes connectionstring: <br>" );
-            //        Console.WriteLine(cnStr);
-            //    Console.WriteLine("</div>");
-            //    Console.WriteLine("<br>");
-            
-            return cnStr;
+            XDocument doc = XDocument.Load(@".\web.config");
+            var cnElement = doc.Elements("configuration").Elements("connectionStrings").ElementAt(0);
+            return  cnElement.Element("add").Attribute("connectionString").Value;
         }
 
         public static bool TestDB(string cnstr)
         {
             bool dbWorks = false;
-            using (var connection =
-                new SqlConnection(cnstr))
-            {
-                var command = new SqlCommand(TestSQL, connection);
-                connection.Open();
-                var qResult = command.ExecuteScalar();
-                if (qResult != null)
+            try
+            {       
+                using (var connection =
+                    new SqlConnection(cnstr))
                 {
-                    string qResultStr = qResult.ToString();
-                    if (qResultStr.Contains(TestSQLResultContains))
+                    var command = new SqlCommand(TestSQL, connection);
+                    connection.Open();
+                    var qResult = command.ExecuteScalar();
+                    if (qResult != null)
                     {
-                        dbWorks = true;
+                        string qResultStr = qResult.ToString();
+                        if (qResultStr.Contains(TestSQLResultContains))
+                        {
+                            dbWorks = true;
+                        }
                     }
+                    connection.Close();
                 }
-                connection.Close();
-                return dbWorks;
+            }
+                 catch (Exception)
+            {
+
+                dbWorks = false;
             }
 
+            return dbWorks;
+            
+            
 
         }
-        public static void Ping(string hostname)
+        public static long Ping(string hostname)
         {
-            //Create ping object
             Ping netMon = new Ping();
-
-            //Ping host (this will block until complete)
             var response = netMon.Send(hostname, 4);
-
-            //Process ping response
-            if (response != null)
-            {
-                string pingTime = response.RoundtripTime.ToString();
-                Console.WriteLine(pingTime);
-            }
+            return response.RoundtripTime;                          
         }
     }
 }
