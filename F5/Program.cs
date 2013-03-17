@@ -8,6 +8,7 @@ using System.Text;
 using System.Collections;
 using System.Collections.Specialized;
 using System.Diagnostics;
+using System.Web;
 using System.Xml;
 using System.Xml.Linq;
 
@@ -32,23 +33,9 @@ namespace F5
         {
            Console.WriteLine("\r\n\r\n");
             Console.WriteLine("<html>");
-            if (Environment.GetEnvironmentVariable("QUERY_STRING").Contains( "debug=true"))
-            {
-                Console.WriteLine("<h1>Check IIS</h1>");
-                foreach (DictionaryEntry var in Environment.GetEnvironmentVariables())
-                    Console.WriteLine("<hr><b>{0}</b>: {1}", var.Key, var.Value);
-                Console.WriteLine("<br>");
-                if (Environment.GetEnvironmentVariable("QUERY_STRING").Contains("ping"))
-                {
-                    Console.WriteLine("<h1>Check ping </h1>");
-                    Console.WriteLine("Responstime ms to sunet.se:{0}", Ping("sunet.se"));
-                }
-                Console.WriteLine("<br>");
-                Console.WriteLine("<h1>Check DB</h1>");
-                Console.WriteLine(ReadConnectionStrings());
-            }
-
-                if (TestDB( ReadConnectionStrings()))
+            string queryString = Environment.GetEnvironmentVariable("QUERY_STRING");
+            DoQueyStringChores(queryString);
+            if (TestDB( ReadConnectionStrings()))
                 {
                 Console.WriteLine("<div style='color:green;'>");
                     Console.WriteLine("Alive");
@@ -62,6 +49,27 @@ namespace F5
                     
                 }
             Console.WriteLine("</html>");
+        }
+
+        private static void DoQueyStringChores(string queryString)
+        {
+            if (String.IsNullOrEmpty(queryString)) return;
+            NameValueCollection query = HttpUtility.ParseQueryString(queryString);
+            if (query["debug"] == "true")
+            {
+                Console.WriteLine("<h1>Check IIS</h1>");
+                foreach (DictionaryEntry var in Environment.GetEnvironmentVariables())
+                    Console.WriteLine("<hr><b>{0}</b>: {1}", var.Key, var.Value);
+                Console.WriteLine("<br>");
+                if (!string.IsNullOrEmpty(query["ping"]))
+                {
+                    Console.WriteLine("<h1>Check ping </h1>");
+                    Console.WriteLine("Responstime ms to {0}: {1}",query["ping"], Ping(query["ping"]));
+                }
+                Console.WriteLine("<br>");
+                Console.WriteLine("<h1>Check DB</h1>");
+                Console.WriteLine(ReadConnectionStrings());
+            }
         }
 
         public static string ReadConnectionStrings()
