@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Configuration;
 using System.Data.SqlClient;
+using System.IO;
 using System.Linq;
 using System.Net.NetworkInformation;
 using System.Text;
@@ -21,34 +22,44 @@ namespace F5
 
         private const string DefTestSQL = "Select @@version;";
         private const string DefTestSQLResultContains = "Microsoft";
-        
+
 
         public static string TestSQL
-        { get { return ( DefTestSQL); } }
+        {
+            get { return (DefTestSQL); }
+        }
 
         public static string TestSQLResultContains
-        { get { return ( DefTestSQLResultContains); } }
+        {
+            get { return (DefTestSQLResultContains); }
+        }
 
         private static void Main(string[] args)
         {
-           Console.WriteLine("\r\n\r\n");
+            Console.WriteLine("\r\n\r\n");
             Console.WriteLine("<html>");
             string queryString = Environment.GetEnvironmentVariable("QUERY_STRING");
             DoQueyStringChores(queryString);
-            if (TestDB( ReadConnectionStrings()))
-                {
+            if (AllTestGood())
+            {
                 Console.WriteLine("<div style='color:green;'>");
-                    Console.WriteLine("Alive");
+                Console.WriteLine("Alive");
                 Console.WriteLine("</div>");
-                }
-                else
-                {
-                    Console.WriteLine("<div style='color:red;'>");
-                    Console.WriteLine("Dead");
-                    Console.WriteLine("</div>");
-                    
-                }
+            }
+            else
+            {
+                Console.WriteLine("<div style='color:red;'>");
+                Console.WriteLine("Dead");
+                Console.WriteLine("</div>");
+
+            }
             Console.WriteLine("</html>");
+        }
+
+        private static bool AllTestGood()
+        {
+            bool allTestGood = true;
+            return allTestGood;
         }
 
         private static void DoQueyStringChores(string queryString)
@@ -64,12 +75,26 @@ namespace F5
                 if (!string.IsNullOrEmpty(query["ping"]))
                 {
                     Console.WriteLine("<h1>Check ping </h1>");
-                    Console.WriteLine("Responstime ms to {0}: {1}",query["ping"], Ping(query["ping"]));
+                    Console.WriteLine("Responstime ms to {0}: {1}", query["ping"], Ping(query["ping"]));
                 }
                 Console.WriteLine("<br>");
                 Console.WriteLine("<h1>Check DB</h1>");
                 Console.WriteLine(ReadConnectionStrings());
             }
+        }
+
+        private static Boolean FindConfigFile(out string webDir)
+        {
+            bool fileExist = false;
+            webDir = "NoConfigFileExist";
+            string pathToWebSite = Environment.GetEnvironmentVariable("PATH_TRANSLATED");
+            string WebsiteDirectory = Path.GetDirectoryName(pathToWebSite);
+           fileExist= File.Exists("WebsiteDirectory" + ".config");
+            if (fileExist)
+            {
+                webDir = WebsiteDirectory;
+            }
+            return fileExist;
         }
 
         public static string ReadConnectionStrings()
