@@ -97,7 +97,12 @@ namespace F5
             return fileExist;
         }
 
-        public static string ReadConnectionStrings()
+        private static List<IAliveTest> FindExtraTest()
+        {
+            throw new NotImplementedException();
+        }
+
+        private static string ReadConnectionStrings()
         {
             XDocument doc = XDocument.Load(@".\web.config");
             var cnElement = doc.Elements("configuration").Elements("connectionStrings").ElementAt(0);
@@ -142,6 +147,26 @@ namespace F5
             Ping netMon = new Ping();
             var response = netMon.Send(hostname, 4);
             return response.RoundtripTime;                          
+        }
+    }
+
+    internal interface IAliveTest
+    {
+          bool IsAlive();
+    }
+
+    class DatabaseConnTest:IAliveTest
+    {
+        public bool IsAlive()
+        {
+            throw new NotImplementedException();
+        }
+    }
+    class PingTest:IAliveTest
+    {
+        public bool IsAlive()
+        {
+            throw new NotImplementedException();
         }
     }
 }
