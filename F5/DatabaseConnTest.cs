@@ -4,7 +4,7 @@ using System.Data.SqlClient;
 
 namespace F5
 {
-    internal class DatabaseConnTest : IAliveTest
+    public class DatabaseConnTest : IAliveTest
     {
         private const string DefTestSQL = "Select @@version;";
         private const string DefTestSQLResultContains = "Microsoft";
@@ -19,7 +19,7 @@ namespace F5
             get { return (DefTestSQLResultContains); }
         }
 
-        public static string ConnString { get; set; }
+        public  string ConnString { get; set; }
 
         private static bool TestDB(string cnstr)
         {

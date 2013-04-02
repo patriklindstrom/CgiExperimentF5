@@ -3,9 +3,9 @@ using System.Net.NetworkInformation;
 
 namespace F5
 {
-    internal class PingTest : IAliveTest
+    public class PingTest : IAliveTest
     {
-        public static string PingAddress { get; set; }
+        public string PingAddress { get; set; }
         private static long Ping(string hostname)
         {
             Ping netMon = new Ping();

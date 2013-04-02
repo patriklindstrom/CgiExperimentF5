@@ -1,11 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Xml;
 using System.Xml.Serialization;
 
 namespace F5
 {
-    internal class TestListConfig
+    public class TestListConfig
     {
         public TestList Tests { get; set; }
         public string ConfigFileName { get; set; }
@@ -14,24 +15,49 @@ namespace F5
             ConfigFileName = cFName;
             Tests = new TestList();
         }
+        public void ReadExtraTest()
+        {
+            try
+            {
+                var xmlSerializer1 = new XmlSerializer(typeof(String));
+                var xmlSerializer = new XmlSerializer(typeof(TestList));
+                var xmlReader = XmlReader.Create(new StreamReader(ConfigFileName));
+                Tests = (TestList)xmlSerializer.Deserialize(xmlReader);
+                xmlReader.Close();
+            }
+            catch (Exception)
+            {
+                
+               
+            }
 
+            
+        }
         public void SaveToFile()
         {
             string path = ConfigFileName;
-            // Check if ConfigFileName exist. If so create other file. Do not overwrite.            
+            //DatabaseConnTest dbT = new DatabaseConnTest { ConnString = "kalle" };
+            //PingTest pT = new PingTest {PingAddress = "sunet.se"};
+            //TestList aList = new TestList {dbT, pT};
+            // Check if ConfigFileName exist. If so create other file. Do not overwrite.    
+
             XmlSerializer x = new XmlSerializer(Tests.GetType());
             StreamWriter writer = new StreamWriter(GetFileName(path));
-            x.Serialize(writer, Tests); 
+            x.Serialize(writer, Tests);
+            writer.Flush();
+            writer.Close();
+            
         }
 
         private string GetFileName(string suggestedFileName)
         {
             if (File.Exists(suggestedFileName))
             {
-                return string.Format(@"{0}.config", Guid.NewGuid());
-               // return Path.GetTempFilename();
+                return suggestedFileName+".xml";
+                //string.Format(@"{0}.config", Guid.NewGuid());
+                // return Path.GetTempFilename();
             }
-            return suggestedFileName;
+            return suggestedFileName + ".xml";
         }
 
         static FileStream CreateFileWithUniqueName(string folder, string fileName,
@@ -67,6 +93,7 @@ namespace F5
 
             throw new Exception("Could not create unique filename in " + maxAttempts + " attempts");
         }
+
 
     }
 }

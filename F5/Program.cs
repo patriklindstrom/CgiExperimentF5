@@ -15,11 +15,12 @@ namespace F5
         private static void Main(string[] args)
         {
             if (RunAsCgi())
+            //if (true)
             {
                 Console.WriteLine("\r\n\r\n");
                 Console.WriteLine("<html>");
-                string queryString = Environment.GetEnvironmentVariable("QUERY_STRING");
-                DoQueyStringChores(queryString);
+               // string queryString = Environment.GetEnvironmentVariable("QUERY_STRING");
+               // DoQueyStringChores(queryString);
                 if (AllTestGood())
                 {
                     Console.WriteLine("<div style='color:green;'>");
@@ -106,6 +107,16 @@ namespace F5
         private static bool AllTestGood()
         {
             bool allTestGood = true;
+            TestListConfig allTestToDo = new TestListConfig(FindConfigFile());
+            allTestToDo.ReadExtraTest();
+            foreach (var test in allTestToDo.Tests)
+            {
+              allTestGood =  test.IsAlive();
+                if (!allTestGood)
+                {
+                    break;
+                }
+            }
             return allTestGood;
         }
 
@@ -130,31 +141,23 @@ namespace F5
             }
         }
 
-        private static Boolean FindConfigFile(out string configFile)
+        private static string FindConfigFile()
         {
             bool fileExist = false;
-            configFile = "NoConfigFileExist";
+            string configFile = "NoConfigFileExist";
+             configFile = "CGITest.xml";
             // APP_POOL_ID: CGITest  instead?
             //string pathToWebSite = Environment.GetEnvironmentVariable("PATH_TRANSLATED");
             //string WebsiteDirectory = Path.GetDirectoryName(pathToWebSite);
             string appPoolId = Environment.GetEnvironmentVariable("APP_POOL_ID");
-            fileExist = File.Exists(appPoolId + ".config");
+            fileExist = File.Exists(appPoolId + ".xml");
             if (fileExist)
             {
                 configFile = appPoolId;
             }
-            return fileExist;
+            return configFile;
         }
 
-        private static List<IAliveTest> FindExtraTest()
-        {
-            string config;
-            if (FindConfigFile(out config))
-            {
-            }
-
-            throw new NotImplementedException();
-        }
 
 
 
