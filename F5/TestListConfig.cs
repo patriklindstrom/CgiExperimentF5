@@ -17,19 +17,23 @@ namespace F5
         }
         public void ReadExtraTest()
         {
-            try
-            {
-                var xmlSerializer1 = new XmlSerializer(typeof(String));
-                var xmlSerializer = new XmlSerializer(typeof(TestList));
+           // try
+            //{
+             // var xmlSerializer1 = new XmlSerializer(typeof(String));
+            var foo = typeof (TestList);
+            Console.WriteLine(foo.ToString());
+            var xmlSerializer = new XmlSerializer(foo,"http://www.lcube.se");
+           // var xmlSerializer = new XmlSerializer(Tests.GetType());
                 var xmlReader = XmlReader.Create(new StreamReader(ConfigFileName));
                 Tests = (TestList)xmlSerializer.Deserialize(xmlReader);
                 xmlReader.Close();
-            }
-            catch (Exception)
-            {
-                
-               
-            }
+            //}
+            // catch (Exception)
+            // {
+                //Console.WriteLine("</br>");
+               // Console.WriteLine("Error in reading extratest config");
+               // throw;
+            // }
 
             
         }
@@ -41,7 +45,7 @@ namespace F5
             //TestList aList = new TestList {dbT, pT};
             // Check if ConfigFileName exist. If so create other file. Do not overwrite.    
 
-            XmlSerializer x = new XmlSerializer(Tests.GetType());
+            XmlSerializer x = new XmlSerializer(Tests.GetType(), "http://www.lcube.se");
             StreamWriter writer = new StreamWriter(GetFileName(path));
             x.Serialize(writer, Tests);
             writer.Flush();

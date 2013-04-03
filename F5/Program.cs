@@ -19,8 +19,9 @@ namespace F5
             {
                 Console.WriteLine("\r\n\r\n");
                 Console.WriteLine("<html>");
-               // string queryString = Environment.GetEnvironmentVariable("QUERY_STRING");
-               // DoQueyStringChores(queryString);
+                string queryString = Environment.GetEnvironmentVariable("QUERY_STRING");
+                DoQueyStringChores(queryString);
+
                 if (AllTestGood())
                 {
                     Console.WriteLine("<div style='color:green;'>");
@@ -130,14 +131,18 @@ namespace F5
                 foreach (DictionaryEntry var in Environment.GetEnvironmentVariables())
                     Console.WriteLine("<hr><b>{0}</b>: {1}", var.Key, var.Value);
                 Console.WriteLine("<br>");
-                //if (!string.IsNullOrEmpty(query["ping"]))
-                //{
-                //    Console.WriteLine("<h1>Check ping </h1>");
-                //    Console.WriteLine("Responstime ms to {0}: {1}", query["ping"], Ping(query["ping"]));
-                //}
-                //Console.WriteLine("<br>");
-                //Console.WriteLine("<h1>Check DB</h1>");
-                //Console.WriteLine(ReadConnectionStrings());
+                if (!string.IsNullOrEmpty(query["ping"]))
+                {
+                    Console.WriteLine("<h1>Check ping </h1>");
+                    var ping = new PingTest {PingAddress = query["ping"]};
+                    if (ping.IsAlive())
+                    {
+                        Console.WriteLine("{0} is Alive", ping.PingAddress);
+                    }
+                }
+                Console.WriteLine("<br>");
+                Console.WriteLine("<h1>Check DB</h1>");
+               // Console.WriteLine(ReadConnectionStrings());
             }
         }
 
