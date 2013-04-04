@@ -1,11 +1,15 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
+using System.Security.Permissions;
 using System.Xml;
+using System.Xml.Linq;
 using System.Xml.Serialization;
 
 namespace F5
 {
+   
     public class TestListConfig
     {
         public TestList Tests { get; set; }
@@ -15,18 +19,46 @@ namespace F5
             ConfigFileName = cFName;
             Tests = new TestList();
         }
+
         public void ReadExtraTest()
         {
            // try
             //{
              // var xmlSerializer1 = new XmlSerializer(typeof(String));
-            var foo = typeof (TestList);
-            Console.WriteLine(foo.ToString());
-            var xmlSerializer = new XmlSerializer(foo,"http://www.lcube.se");
+            //var foo = typeof (TestList);
+         //   Console.WriteLine(foo.ToString());
+           // var xmlSerializer = new XmlSerializer(foo,"http://www.lcube.se");
            // var xmlSerializer = new XmlSerializer(Tests.GetType());
-                var xmlReader = XmlReader.Create(new StreamReader(ConfigFileName));
-                Tests = (TestList)xmlSerializer.Deserialize(xmlReader);
-                xmlReader.Close();
+
+                       XDocument doc = XDocument.Load(@".\CGITest.xml");
+            //var cnElement1 = doc.Elements("TestList");
+            //var cnElement = cnElement1.Elements("IAliveTest");
+            //var aLiveTests = cnElement.Elements("DatabaseConnTest");
+            //           var dbTest = aLiveTests.Elements("ConnString").ElementAt(0);
+            //           string cnStr = dbTest.Value;
+
+
+
+
+               // var xmlReader = XmlReader.Create(new StreamReader(ConfigFileName));
+                //XElement xelement = XElement.Load(xmlReader);
+                       IEnumerable<XElement> databaseConnTests = doc.Elements().Where(n => n.Name == "DatabaseConnection");
+                Console.WriteLine("databaseConnection :");
+                foreach (var dbConn in databaseConnTests)
+                {
+                    Console.WriteLine(dbConn.Element("ConnString").Value);
+                    Tests.Add(new DatabaseConnTest { ConnString = dbConn.Element("ConnString").Value });
+                }
+            //var dbTest = new DatabaseConnTest
+            //    {
+            //        ConnString =
+            //            @"data source=Herkules\Dev;initial catalog=HaxitDB;integrated security=True;;Connection Timeout=5;"
+            //    };
+            var pingTest = new PingTest {PingAddress = "sunet.se"};
+
+            Tests.Add(pingTest);
+
+           
             //}
             // catch (Exception)
             // {

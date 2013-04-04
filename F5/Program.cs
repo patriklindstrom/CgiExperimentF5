@@ -14,8 +14,9 @@ namespace F5
     {
         private static void Main(string[] args)
         {
-            if (RunAsCgi())
-            //if (true)
+            
+           //if (RunAsCgi())
+            if (true)
             {
                 Console.WriteLine("\r\n\r\n");
                 Console.WriteLine("<html>");
@@ -150,15 +151,15 @@ namespace F5
         {
             bool fileExist = false;
             string configFile = "NoConfigFileExist";
-             configFile = "CGITest.xml";
+             configFile = @".\CGITest.xml";
             // APP_POOL_ID: CGITest  instead?
             //string pathToWebSite = Environment.GetEnvironmentVariable("PATH_TRANSLATED");
             //string WebsiteDirectory = Path.GetDirectoryName(pathToWebSite);
             string appPoolId = Environment.GetEnvironmentVariable("APP_POOL_ID");
-            fileExist = File.Exists(appPoolId + ".xml");
+            fileExist = File.Exists(@".\" + appPoolId + ".xml");
             if (fileExist)
             {
-                configFile = appPoolId;
+                configFile = @".\"  + appPoolId +".xml";
             }
             return configFile;
         }
