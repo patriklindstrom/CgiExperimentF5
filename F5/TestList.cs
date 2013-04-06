@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Xml;
 using System.Xml.Schema;
 using System.Xml.Serialization;
+using F5.Tests;
 
 namespace F5
 {
@@ -23,9 +24,9 @@ namespace F5
 
                 reader.ReadStartElement("IAliveTest");
                 this.Add((IAliveTest)serial.Deserialize(reader));
-                reader.ReadEndElement(); //IDoTest
+                reader.ReadEndElement(); 
             }
-            reader.ReadEndElement(); //IDoTest
+            reader.ReadEndElement(); 
         }
 
         public void WriteXml(XmlWriter writer)

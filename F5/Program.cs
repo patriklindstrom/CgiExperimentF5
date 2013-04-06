@@ -5,25 +5,27 @@ using System.Net.NetworkInformation;
 using System.Collections;
 using System.Collections.Specialized;
 using System.Web;
-
+using F5.Tests;
 
 
 namespace F5
 {
     internal class Program
     {
+        public static IRunSpace Space;
         private static void Main(string[] args)
         {
-            
-           //if (RunAsCgi())
-            if (true)
+             Space = new RunSpaceTest();
+
+            if (Space.InIIS)
+
             {
                 Console.WriteLine("\r\n\r\n");
                 Console.WriteLine("<html>");
                 string queryString = Environment.GetEnvironmentVariable("QUERY_STRING");
-                DoQueyStringChores(queryString);
-
-                if (AllTestGood())
+                if (!String.IsNullOrEmpty(queryString)) { DoQueyStringChores(queryString); }               
+                TestListConfig allTestToDo = new TestListConfig(Space.ConfigFile);
+                if (AllTestGood(allTestToDo))
                 {
                     Console.WriteLine("<div style='color:green;'>");
                     Console.WriteLine("Alive");
@@ -100,16 +102,10 @@ namespace F5
             }
         }
 
-        private static bool RunAsCgi()
-        {
-            string appPoolId = Environment.GetEnvironmentVariable("APP_POOL_ID");
-            return !String.IsNullOrEmpty(appPoolId);
-        }
-
-        private static bool AllTestGood()
+        private static bool AllTestGood(TestListConfig allTestToDo)
         {
             bool allTestGood = true;
-            TestListConfig allTestToDo = new TestListConfig(FindConfigFile());
+           
             allTestToDo.ReadExtraTest();
             foreach (var test in allTestToDo.Tests)
             {
@@ -146,29 +142,5 @@ namespace F5
                // Console.WriteLine(ReadConnectionStrings());
             }
         }
-
-        private static string FindConfigFile()
-        {
-            bool fileExist = false;
-            string configFile = "NoConfigFileExist";
-             configFile = @".\CGITest.xml";
-            // APP_POOL_ID: CGITest  instead?
-            //string pathToWebSite = Environment.GetEnvironmentVariable("PATH_TRANSLATED");
-            //string WebsiteDirectory = Path.GetDirectoryName(pathToWebSite);
-            string appPoolId = Environment.GetEnvironmentVariable("APP_POOL_ID");
-            fileExist = File.Exists(@".\" + appPoolId + ".xml");
-            if (fileExist)
-            {
-                configFile = @".\"  + appPoolId +".xml";
-            }
-            return configFile;
-        }
-
-
-
-
-
-
-
     }
 }

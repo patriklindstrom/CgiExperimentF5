@@ -92,32 +92,19 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="DatabaseConnTest.cs" />
-    <Compile Include="DBTest.cs" />
-    <Compile Include="DBTest.Designer.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTimeSharedInput>True</DesignTimeSharedInput>
-      <DependentUpon>DBTest.settings</DependentUpon>
-    </Compile>
-    <Compile Include="IAliveTest.cs" />
-    <Compile Include="PingTest.cs" />
+    <Compile Include="Tests\DatabaseConnTest.cs" />
+    <Compile Include="Tests\IAliveTest.cs" />
+    <Compile Include="Tests\PingTest.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="RunSpace.cs" />
     <Compile Include="TestList.cs" />
     <Compile Include="TestListConfig.cs" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="App.config">
-      <SubType>Designer</SubType>
-    </None>
-    <None Include="DBTest.settings">
-      <Generator>SettingsSingleFileGenerator</Generator>
-      <LastGenOutput>DBTest.Designer.cs</LastGenOutput>
-    </None>
     <None Include="F5_TemporaryKey.pfx" />
     <None Include="PatrikGoodKeys.pfx" />
     <None Include="Properties\app.manifest" />
-    <None Include="web.config" />
   </ItemGroup>
   <ItemGroup>
     <BootstrapperPackage Include=".NETFramework,Version=v4.5">

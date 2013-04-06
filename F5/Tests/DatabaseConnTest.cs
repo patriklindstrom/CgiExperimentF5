@@ -1,8 +1,7 @@
 ﻿using System;
 using System.Data.SqlClient;
 
-
-namespace F5
+namespace F5.Tests
 {
     public class DatabaseConnTest : IAliveTest
     {

@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Net.NetworkInformation;
 
-namespace F5
+namespace F5.Tests
 {
     public class PingTest : IAliveTest
     {
