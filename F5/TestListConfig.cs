@@ -26,25 +26,31 @@ namespace F5
         public void ReadExtraTest()
         {
             XDocument doc = XDocument.Load(ConfigFileName);
-            IEnumerable<XElement> testList = doc.Root.Elements();
-            foreach (var iAliveTest in testList)
+            if (doc.Root != null)
             {
-                var test = iAliveTest.Descendants().First();
-                var foo = test.Name;
-                if (test.Name == "DatabaseConnTest")
+                IEnumerable<XElement> testList = doc.Root.Elements();
+                foreach (var iAliveTest in testList)
                 {
-                    Tests.Add(new DatabaseConnTest { ConnString = test.Element("ConnString").Value });
+                    var test = iAliveTest.Descendants().First();
+                    if (test.Name == "DatabaseConnTest")
+                    {
+                        var xElement = test.Element("ConnString");
+                        if (xElement != null)
+                            Tests.Add(new DatabaseConnTest { ConnString = xElement.Value });
+                    }
+                    if (test.Name == "PingTest")
+                    {
+                        var xElement = test.Element("PingAddress");
+                        if (xElement != null)
+                            Tests.Add(new PingTest { PingAddress = xElement.Value });
+                    }
                 }
-                if (test.Name == "PingTest")
-                {
-                    Tests.Add(new PingTest { PingAddress = test.Element("PingAddress").Value });
-                }
-            }          
+            }
         }
         public void SaveToFile()
         {
-            XmlSerializer x = new XmlSerializer(Tests.GetType(), "http://www.lcube.se");
-            StreamWriter writer = new StreamWriter(ConfigFileName);
+            var x = new XmlSerializer(Tests.GetType(), "http://www.lcube.se/alivetest.xsd");
+            var writer = new StreamWriter(ConfigFileName);
             x.Serialize(writer, Tests);
             writer.Flush();
             writer.Close();           

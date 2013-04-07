@@ -12,22 +12,17 @@ namespace F5
   
         #region IXmlSerializable
         public XmlSchema GetSchema(){ return null; }
-   
 
+        /// <summary>
+        /// Should implement the reading part of the deserialistion.
+        /// </summary>
+        /// <param name="reader"></param>
+        /// <exception cref="NotImplementedException">It s not implemented. Get security issues when xmlserializer is used as cgi.</exception>
         public void ReadXml(XmlReader reader)
         {
-            reader.ReadStartElement("TestList");
-            while (reader.IsStartElement("IAliveTest"))
-            {
-                Type type = Type.GetType(reader.GetAttribute("AssemblyQualifiedName"));
-                XmlSerializer serial = new XmlSerializer(type);
-
-                reader.ReadStartElement("IAliveTest");
-                this.Add((IAliveTest)serial.Deserialize(reader));
-                reader.ReadEndElement(); 
-            }
-            reader.ReadEndElement(); 
+            throw new NotImplementedException();
         }
+
 
         public void WriteXml(XmlWriter writer)
         {
@@ -35,7 +30,7 @@ namespace F5
             {
                 writer.WriteStartElement("IAliveTest");
                 writer.WriteAttributeString("AssemblyQualifiedName", test.GetType().AssemblyQualifiedName);
-                XmlSerializer xmlSerializer = new XmlSerializer(test.GetType());
+                var xmlSerializer = new XmlSerializer(test.GetType());
                 xmlSerializer.Serialize(writer, test);
                 writer.WriteEndElement();
             }

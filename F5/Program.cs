@@ -1,7 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Net.NetworkInformation;
 using System.Collections;
 using System.Collections.Specialized;
 using System.Web;
@@ -24,7 +21,7 @@ namespace F5
                 Console.WriteLine("<html>");
                 string queryString = Environment.GetEnvironmentVariable("QUERY_STRING");
                 if (!String.IsNullOrEmpty(queryString)) { DoQueyStringChores(queryString); }               
-                TestListConfig allTestToDo = new TestListConfig(Space.ConfigFile);
+                var allTestToDo = new TestListConfig(Space.ConfigFile);
                 if (AllTestGood(allTestToDo))
                 {
                     Console.WriteLine("<div style='color:green;'>");
@@ -41,12 +38,11 @@ namespace F5
             }
             else
             {
-                var foo = args;
                 if (args.Length == 0)
                 {
                     Console.WriteLine("Do you want to create AliveTestConfig File? [y]");
                     string answere = Console.ReadLine();
-                    if (String.Compare(strA:answere,strB:"y",ignoreCase:true)==0)
+                    if (String.Compare(answere, "y", StringComparison.OrdinalIgnoreCase)==0)
                     {
                         CreateConfigFromConsoleMain();
                     }
@@ -64,7 +60,6 @@ namespace F5
                 string choice = "0";
                 while (choice != "-1")
                 {
-                    choice = "-1";
                     Console.WriteLine("For help enter 0");
                     Console.WriteLine("Create SQL Server DB enter number 1");
                     Console.WriteLine("Create TCP/IP Ping enter number 2");

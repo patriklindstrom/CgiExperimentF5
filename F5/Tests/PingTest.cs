@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics;
 using System.Net.NetworkInformation;
 
 namespace F5.Tests
@@ -8,8 +9,9 @@ namespace F5.Tests
         public string PingAddress { get; set; }
         private static long Ping(string hostname)
         {
-            Ping netMon = new Ping();
+            var netMon = new Ping();
             var response = netMon.Send(hostname, 4);
+            Debug.Assert(response != null, "response != null");
             return response.RoundtripTime;
         }
         public bool IsAlive()
@@ -18,7 +20,7 @@ namespace F5.Tests
            
            long pingTime= Ping(PingAddress);
             //Special for localhost is mostly zero in time
-            if (pingTime ==0 && String.Compare(strA:PingAddress,strB:"localhost",ignoreCase:true)==0)
+            if (pingTime ==0 && String.Compare(PingAddress, "localhost", StringComparison.OrdinalIgnoreCase)==0)
             {
                 alive = true;
             }
