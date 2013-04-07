@@ -1,16 +1,16 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using System.Text;
+
 
 namespace F5
 {
-    internal interface IRunSpace
+    public interface IRunSpace
     {
         string AppPoolId { get; set; }
         bool InIIS { get; set; }
         string ConfigFile { get; set; }
+        string QueryString { get; }
     }
 
     class RunSpace : IRunSpace
@@ -20,12 +20,14 @@ namespace F5
         public bool InIIS { get; set; }
 
         public string ConfigFile { get; set; }
+        public string QueryString { get; private set; }
 
         public RunSpace()
         {
             AppPoolId = Environment.GetEnvironmentVariable("APP_POOL_ID");
             InIIS = !String.IsNullOrEmpty(AppPoolId);
             ConfigFile = @".\" + AppPoolId + ".xml";
+            QueryString = Environment.GetEnvironmentVariable("QUERY_STRING");
         }
 
         static FileStream CreateFileWithUniqueName(string folder, string fileName,int maxAttempts = 1024)
@@ -65,17 +67,5 @@ namespace F5
 
 
 
-    class RunSpaceTest : IRunSpace
-    {
-        public RunSpaceTest()
-        {
-            AppPoolId = "CGITest";
-            InIIS = true;
-            ConfigFile = @".\CGITest.xml";
-        }
-
-        public string AppPoolId { get; set; }
-        public bool InIIS { get; set; }
-        public string ConfigFile { get; set; }
-    }
+    
 }

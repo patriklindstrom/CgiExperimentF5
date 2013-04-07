@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections;
+using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Web;
 using F5.Tests;
@@ -7,23 +8,17 @@ using F5.Tests;
 
 namespace F5
 {
-    internal class Program
+    public class Program
     {
-        public static IRunSpace Space;
+
         private static void Main(string[] args)
         {
-             Space = new RunSpaceTest();
-
-            if (Space.InIIS)
-
-            {
-                Console.WriteLine("\r\n\r\n");
-                Console.WriteLine("<html>");
-                string queryString = Environment.GetEnvironmentVariable("QUERY_STRING");
-                if (!String.IsNullOrEmpty(queryString)) { DoQueyStringChores(queryString); }               
-                var allTestToDo = new TestListConfig(Space.ConfigFile);
-                if (AllTestGood(allTestToDo))
-                {
+            var space = new RunSpaceTest();
+           var allTestToDo = new TestListConfig(space.ConfigFile);
+            var tstController = new TestController();
+           RunRightModeOfProgram(args, space, allTestToDo,tstController);
+            if (tstController.AllTestGood)
+             {
                     Console.WriteLine("<div style='color:green;'>");
                     Console.WriteLine("Alive");
                     Console.WriteLine("</div>");
@@ -36,18 +31,34 @@ namespace F5
                 }
                 Console.WriteLine("</html>");
             }
-            else
+        
+
+    public static void RunRightModeOfProgram(ICollection<string> args, IRunSpace space,ITestListConfig allTestToDo,TestController testController)
+        {
+        if (space.InIIS)
+        {
+            Console.WriteLine("\r\n\r\n");
+            Console.WriteLine("<html>");
+            string queryString = space.QueryString;
+            if (!String.IsNullOrEmpty(queryString))
             {
-                if (args.Length == 0)
+                DoQueyStringChores(queryString);
+            }
+
+            testController.DoAllTest(allTestToDo.Tests);
+        }
+        else
+        {
+            if (args.Count == 0)
+            {
+                Console.WriteLine("Do you want to create AliveTestConfig File? [y]");
+                string answere = Console.ReadLine();
+                if (String.Compare(answere, "y", StringComparison.OrdinalIgnoreCase) == 0)
                 {
-                    Console.WriteLine("Do you want to create AliveTestConfig File? [y]");
-                    string answere = Console.ReadLine();
-                    if (String.Compare(answere, "y", StringComparison.OrdinalIgnoreCase)==0)
-                    {
-                        CreateConfigFromConsoleMain();
-                    }
+                    CreateConfigFromConsoleMain();
                 }
             }
+        }
         }
 
         private static void CreateConfigFromConsoleMain()
@@ -97,21 +108,6 @@ namespace F5
             }
         }
 
-        private static bool AllTestGood(TestListConfig allTestToDo)
-        {
-            bool allTestGood = true;
-           
-            allTestToDo.ReadExtraTest();
-            foreach (var test in allTestToDo.Tests)
-            {
-              allTestGood =  test.IsAlive();
-                if (!allTestGood)
-                {
-                    break;
-                }
-            }
-            return allTestGood;
-        }
 
         private static void DoQueyStringChores(string queryString)
         {
@@ -137,5 +133,19 @@ namespace F5
                // Console.WriteLine(ReadConnectionStrings());
             }
         }
+    }
+    class RunSpaceTest : IRunSpace
+    {
+        public RunSpaceTest()
+        {
+            AppPoolId = "CGITest";
+            InIIS = true;
+            ConfigFile = @".\CGITest";
+        }
+
+        public string AppPoolId { get; set; }
+        public bool InIIS { get; set; }
+        public string ConfigFile { get; set; }
+        public string QueryString { get; set; }
     }
 }

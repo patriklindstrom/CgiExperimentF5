@@ -1,4 +1,5 @@
 ﻿
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -19,8 +20,9 @@ namespace F5
         public string ConfigFileName { get; set; }
         public TestListConfig(string  cFName)
         {
-            ConfigFileName = cFName;
+            ConfigFileName = cFName +".xml";
             Tests = new TestList();
+            ReadExtraTest();
         }
 
         public void ReadExtraTest()
@@ -50,6 +52,10 @@ namespace F5
         public void SaveToFile()
         {
             var x = new XmlSerializer(Tests.GetType(), "http://www.lcube.se/alivetest.xsd");
+            Console.WriteLine("Give Path to file");
+            string pathString = Console.ReadLine();
+            ConfigFileName = pathString + "\\" + ConfigFileName;
+            Console.WriteLine("outputpath {0}",ConfigFileName);
             var writer = new StreamWriter(ConfigFileName);
             x.Serialize(writer, Tests);
             writer.Flush();
