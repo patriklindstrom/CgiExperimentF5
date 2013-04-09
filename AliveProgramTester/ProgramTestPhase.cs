@@ -10,16 +10,16 @@ namespace AliveProgramTester
         [TestMethod]
         public void Do_A_DB_ConnTest()
         {
-            //Appupall
+            //Arrange
             var fakedRunSpace = new RunSpaceTest();
             var dbConnTest = new DBConnTest();
             var fakedTestList = new F5.TestList {dbConnTest};
             var allfakedTestToDo = new TestListConfigTest(fakedTestList);
-            var testController = new TestController();
+            TestController testController;
             //Act
-            Program.RunRightModeOfProgram(null, fakedRunSpace, allfakedTestToDo, testController);
-            //Assert
-
+            Program.RunRightModeOfProgram(fakedRunSpace, allfakedTestToDo, out testController);
+            //Assert         
+            Assert.IsTrue( testController.AllTestGood,"Test DB test are good");
         }
     }
 }

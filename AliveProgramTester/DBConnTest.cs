@@ -7,7 +7,7 @@ namespace AliveProgramTester
     {
         public bool IsAlive()
         {
-            throw new NotImplementedException();
+            return true;
         }
 
         public void CreateConfigFromConsole()

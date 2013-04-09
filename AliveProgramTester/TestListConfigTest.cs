@@ -10,5 +10,10 @@ namespace AliveProgramTester
         }
 
         public TestList Tests { get; set; }
+
+        public void GetTestList()
+        {//fake get a list
+            Tests = Tests;
+        }
     }
 }

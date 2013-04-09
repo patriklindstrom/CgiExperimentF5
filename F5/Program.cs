@@ -13,61 +13,73 @@ namespace F5
 
         private static void Main(string[] args)
         {
-            var space = new RunSpaceTest();
-           var allTestToDo = new TestListConfig(space.ConfigFile);
-            var tstController = new TestController();
-           RunRightModeOfProgram(args, space, allTestToDo,tstController);
-            if (tstController.AllTestGood)
-             {
-                    Console.WriteLine("<div style='color:green;'>");
-                    Console.WriteLine("Alive");
-                    Console.WriteLine("</div>");
-                }
-                else
-                {
-                    Console.WriteLine("<div style='color:red;'>");
-                    Console.WriteLine("Dead");
-                    Console.WriteLine("</div>");
-                }
-                Console.WriteLine("</html>");
-            }
-        
-
-    public static void RunRightModeOfProgram(ICollection<string> args, IRunSpace space,ITestListConfig allTestToDo,TestController testController)
-        {
-        if (space.InIIS)
-        {
-            Console.WriteLine("\r\n\r\n");
-            Console.WriteLine("<html>");
-            string queryString = space.QueryString;
-            if (!String.IsNullOrEmpty(queryString))
-            {
-                DoQueyStringChores(queryString);
-            }
-
-            testController.DoAllTest(allTestToDo.Tests);
+            var space = new RunSpace {Args = args};
+            var allTestToDo = new TestListConfig(space);
+           TestController testController;
+           RunRightModeOfProgram(space, allTestToDo, out testController);           
         }
-        else
+
+
+        public static void RunRightModeOfProgram(IRunSpace space, ITestListConfig allTestToDo,out TestController testController)
         {
-            if (args.Count == 0)
+            testController = null;
+            if (space.InIIS)
+            {
+
+                allTestToDo.GetTestList();
+                testController = new TestController();
+                BeCgi(allTestToDo, testController);
+            }
+            else
+            {
+                BeCmdLine(space);
+            }
+        }
+
+        public static void BeCmdLine(IRunSpace space)
+        {
+            if (space.Args.Length == 0)
             {
                 Console.WriteLine("Do you want to create AliveTestConfig File? [y]");
                 string answere = Console.ReadLine();
                 if (String.Compare(answere, "y", StringComparison.OrdinalIgnoreCase) == 0)
                 {
-                    CreateConfigFromConsoleMain();
+                    CreateConfigFromConsoleMain(space);
                 }
             }
         }
+
+        public static void BeCgi(ITestListConfig allTestToDo, TestController testController)
+        {
+            Console.WriteLine("\r\n\r\n");
+            Console.WriteLine("<html>");
+
+            testController.DoAllTest(allTestToDo.Tests);
+
+            if (testController.AllTestGood)
+            {
+                Console.WriteLine("<div style='color:green;'>");
+                Console.WriteLine("Alive");
+                Console.WriteLine("</div>");
+            }
+            else
+            {
+                Console.WriteLine("<div style='color:red;'>");
+                Console.WriteLine("Dead");
+                Console.WriteLine("</div>");
+            }
+            Console.WriteLine("</html>");
         }
 
-        private static void CreateConfigFromConsoleMain()
+        private static void CreateConfigFromConsoleMain(IRunSpace space)
         {
             Console.WriteLine("Enter Name of Application pool?");
             string applPool = Console.ReadLine();
             if (!String.IsNullOrEmpty(applPool))
             {
-                var testListConfig = new TestListConfig(applPool);
+                space.AppPoolId = applPool;
+                space.ConfigFile = applPool + ".xml"; 
+                var testListConfig = new TestListConfig(space);
                 string choice = "0";
                 while (choice != "-1")
                 {
@@ -97,9 +109,9 @@ namespace F5
                             break;
                     }
                     if (test != null)
-                    {         
-                    test.CreateConfigFromConsole();
-                    testListConfig.Tests.Add(test);
+                    {
+                        test.CreateConfigFromConsole();
+                        testListConfig.Tests.Add(test);
                     }
 
                 }
@@ -109,43 +121,20 @@ namespace F5
         }
 
 
-        private static void DoQueyStringChores(string queryString)
+        private class RunSpaceTest : IRunSpace
         {
-            if (String.IsNullOrEmpty(queryString)) return;
-            NameValueCollection query = HttpUtility.ParseQueryString(queryString);
-            if (query["debug"] == "true")
+            public RunSpaceTest()
             {
-                Console.WriteLine("<h1>Check IIS</h1>");
-                foreach (DictionaryEntry var in Environment.GetEnvironmentVariables())
-                    Console.WriteLine("<hr><b>{0}</b>: {1}", var.Key, var.Value);
-                Console.WriteLine("<br>");
-                if (!string.IsNullOrEmpty(query["ping"]))
-                {
-                    Console.WriteLine("<h1>Check ping </h1>");
-                    var ping = new PingTest {PingAddress = query["ping"]};
-                    if (ping.IsAlive())
-                    {
-                        Console.WriteLine("{0} is Alive", ping.PingAddress);
-                    }
-                }
-                Console.WriteLine("<br>");
-                Console.WriteLine("<h1>Check DB</h1>");
-               // Console.WriteLine(ReadConnectionStrings());
+                AppPoolId = "CGITest";
+                InIIS = true;
+                ConfigFile = @".\CGITest";
             }
-        }
-    }
-    class RunSpaceTest : IRunSpace
-    {
-        public RunSpaceTest()
-        {
-            AppPoolId = "CGITest";
-            InIIS = true;
-            ConfigFile = @".\CGITest";
-        }
 
-        public string AppPoolId { get; set; }
-        public bool InIIS { get; set; }
-        public string ConfigFile { get; set; }
-        public string QueryString { get; set; }
+            public string AppPoolId { get; set; }
+            public bool InIIS { get; set; }
+            public string ConfigFile { get; set; }
+            public string QueryString { get; set; }
+            public string[] Args { get; private set; }
+        }
     }
 }

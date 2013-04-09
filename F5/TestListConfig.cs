@@ -12,20 +12,20 @@ namespace F5
     public interface ITestListConfig
     {
         TestList Tests { get; set; }
+        void GetTestList();
     }
 
     public class TestListConfig : ITestListConfig
     {
         public TestList Tests { get; set; }
         public string ConfigFileName { get; set; }
-        public TestListConfig(string  cFName)
+        public TestListConfig(IRunSpace  runSpace)
         {
-            ConfigFileName = cFName +".xml";
-            Tests = new TestList();
-            ReadExtraTest();
+            ConfigFileName = runSpace.ConfigFile;
+            Tests = new TestList();          
         }
 
-        public void ReadExtraTest()
+        public void GetTestList()
         {
             XDocument doc = XDocument.Load(ConfigFileName);
             if (doc.Root != null)
@@ -54,7 +54,8 @@ namespace F5
             var x = new XmlSerializer(Tests.GetType(), "http://www.lcube.se/alivetest.xsd");
             Console.WriteLine("Give Path to file");
             string pathString = Console.ReadLine();
-            ConfigFileName = pathString + "\\" + ConfigFileName;
+            //ConfigFileName = pathString + "\\" + ConfigFileName;
+            if (pathString != null) ConfigFileName = Path.Combine(pathString, ConfigFileName);
             Console.WriteLine("outputpath {0}",ConfigFileName);
             var writer = new StreamWriter(ConfigFileName);
             x.Serialize(writer, Tests);

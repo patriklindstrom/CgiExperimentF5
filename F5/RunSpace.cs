@@ -11,6 +11,7 @@ namespace F5
         bool InIIS { get; set; }
         string ConfigFile { get; set; }
         string QueryString { get; }
+        string[] Args { get; }
     }
 
     class RunSpace : IRunSpace
@@ -21,6 +22,8 @@ namespace F5
 
         public string ConfigFile { get; set; }
         public string QueryString { get; private set; }
+
+        public string[] Args { get; set; }
 
         public RunSpace()
         {
