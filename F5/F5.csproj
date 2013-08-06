@@ -13,19 +13,19 @@
     <FileAlignment>512</FileAlignment>
     <IsWebBootstrapper>false</IsWebBootstrapper>
     <TargetFrameworkProfile />
-    <PublishUrl>P:\inetpub\wwwroot\cgi\</PublishUrl>
+    <PublishUrl>C:\deployArea\CGIF5\</PublishUrl>
     <Install>true</Install>
-    <InstallFrom>Unc</InstallFrom>
-    <UpdateEnabled>true</UpdateEnabled>
+    <InstallFrom>Disk</InstallFrom>
+    <UpdateEnabled>false</UpdateEnabled>
     <UpdateMode>Foreground</UpdateMode>
     <UpdateInterval>7</UpdateInterval>
     <UpdateIntervalUnits>Days</UpdateIntervalUnits>
     <UpdatePeriodically>false</UpdatePeriodically>
     <UpdateRequired>false</UpdateRequired>
     <MapFileExtensions>true</MapFileExtensions>
-    <InstallUrl>\\Herkules\P%24\F5_install\</InstallUrl>
     <WebPage>publish.htm</WebPage>
-    <ApplicationRevision>8</ApplicationRevision>
+    <AutorunEnabled>true</AutorunEnabled>
+    <ApplicationRevision>9</ApplicationRevision>
     <ApplicationVersion>1.0.0.%2a</ApplicationVersion>
     <UseApplicationTrust>false</UseApplicationTrust>
     <PublishWizardCompleted>true</PublishWizardCompleted>
@@ -63,7 +63,7 @@
     <ApplicationManifest>Properties\app.manifest</ApplicationManifest>
   </PropertyGroup>
   <PropertyGroup>
-    <ManifestCertificateThumbprint>2A8483F6FB961B21DCA0EAEA845C4CA3B8DDE176</ManifestCertificateThumbprint>
+    <ManifestCertificateThumbprint>BD386191B05B46B27DADD8632ADDCD49852EAB84</ManifestCertificateThumbprint>
   </PropertyGroup>
   <PropertyGroup>
     <ManifestKeyFile>F5_TemporaryKey.pfx</ManifestKeyFile>
@@ -75,7 +75,7 @@
     <SignAssembly>true</SignAssembly>
   </PropertyGroup>
   <PropertyGroup>
-    <AssemblyOriginatorKeyFile>PatrikGoodKeys.pfx</AssemblyOriginatorKeyFile>
+    <AssemblyOriginatorKeyFile>CGIF5StrongKeyName.snk</AssemblyOriginatorKeyFile>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
@@ -85,7 +85,6 @@
     <Reference Include="System.Web" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
-    <Reference Include="Microsoft.CSharp" />
     <Reference Include="System.Data" />
     <Reference Include="System.Xml">
       <Private>True</Private>
@@ -103,8 +102,8 @@
     <Compile Include="TestListConfig.cs" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="CGIF5StrongKeyName.snk" />
     <None Include="F5_TemporaryKey.pfx" />
-    <None Include="PatrikGoodKeys.pfx" />
     <None Include="Properties\app.manifest" />
   </ItemGroup>
   <ItemGroup>

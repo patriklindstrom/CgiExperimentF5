@@ -27,10 +27,10 @@ namespace F5
 
         public RunSpace()
         {
-            AppPoolId = Environment.GetEnvironmentVariable("APP_POOL_ID");
+            AppPoolId =  Environment.GetEnvironmentVariable("APP_POOL_ID");
             InIIS = !String.IsNullOrEmpty(AppPoolId);
             ConfigFile = @".\" + AppPoolId + ".xml";
-            QueryString = Environment.GetEnvironmentVariable("QUERY_STRING");
+            QueryString =  Environment.GetEnvironmentVariable("QUERY_STRING");
         }
 
         static FileStream CreateFileWithUniqueName(string folder, string fileName,int maxAttempts = 1024)
