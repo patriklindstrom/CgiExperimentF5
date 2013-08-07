@@ -63,10 +63,10 @@
     <ApplicationManifest>Properties\app.manifest</ApplicationManifest>
   </PropertyGroup>
   <PropertyGroup>
-    <ManifestCertificateThumbprint>BD386191B05B46B27DADD8632ADDCD49852EAB84</ManifestCertificateThumbprint>
+    <ManifestCertificateThumbprint>DB61CF41A4367188B269CEDBF1F33F7598D74BED</ManifestCertificateThumbprint>
   </PropertyGroup>
   <PropertyGroup>
-    <ManifestKeyFile>F5_TemporaryKey.pfx</ManifestKeyFile>
+    <ManifestKeyFile>F5_1_TemporaryKey.pfx</ManifestKeyFile>
   </PropertyGroup>
   <PropertyGroup>
     <SignManifests>true</SignManifests>
@@ -102,7 +102,9 @@
     <Compile Include="TestListConfig.cs" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="App.config" />
     <None Include="CGIF5StrongKeyName.snk" />
+    <None Include="F5_1_TemporaryKey.pfx" />
     <None Include="F5_TemporaryKey.pfx" />
     <None Include="Properties\app.manifest" />
   </ItemGroup>

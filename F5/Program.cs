@@ -1,22 +1,36 @@
-﻿using System;
+﻿#define TRACE
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Web;
+using System.Diagnostics;
 using F5.Tests;
 
+//TraceInfo
+/*
+ The first digit can detail the general class: 1xxx can be used for 'Start' operations, 2xxx for normal behaviour, 3xxx for activity tracing, 4xxx for warnings, 5xxx for errors, 8xxx for 'Stop' operations, 9xxx for fatal errors, etc.
+The second digit can detail the area, e.g. 21xx for database information (41xx for database warnings, 51xx for database errors), 22xx for calculation mode (42xx for calculation warnings, etc), 23xx for another module, etc.
+ */
 
 namespace F5
 {
     public class Program
     {
-
+        static TraceSource _mainTrace = new TraceSource("MainLog");
         private static void Main(string[] args)
         {
+            // Trace start
+            Trace.CorrelationManager.ActivityId = Guid.NewGuid();
+            Trace.CorrelationManager.StartLogicalOperation("Main");
+            _mainTrace.TraceEvent(TraceEventType.Start, 1000, "Program start.");
+            _mainTrace.TraceEvent(TraceEventType.Information, 1010, "Get RunSpaceinfo.");
             var space = new RunSpace {Args = args};
+            _mainTrace.TraceEvent(TraceEventType.Information, 1020, "Get TestListConfig.");
             var allTestToDo = new TestListConfig(space);
            TestController testController;
-           RunRightModeOfProgram(space, allTestToDo, out testController);           
+           RunRightModeOfProgram(space, allTestToDo, out testController);
+           Trace.CorrelationManager.StopLogicalOperation();
         }
 
 
@@ -116,6 +130,8 @@ namespace F5
 
                 }
                 testListConfig.SaveToFile();
+                Console.WriteLine("Press Enter to Exit");
+                choice = Console.ReadLine();
 
             }
         }

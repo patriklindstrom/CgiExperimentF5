@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 
 
@@ -24,13 +25,19 @@ namespace F5
         public string QueryString { get; private set; }
 
         public string[] Args { get; set; }
+        static TraceSource _mainTrace = new TraceSource("MainLog");
 
         public RunSpace()
         {
+            
             AppPoolId =  Environment.GetEnvironmentVariable("APP_POOL_ID");
+            _mainTrace.TraceEvent(TraceEventType.Information, 1011, "AppPoolId {0} ", AppPoolId);
             InIIS = !String.IsNullOrEmpty(AppPoolId);
+            _mainTrace.TraceEvent(TraceEventType.Information, 1012, "InIIS {0} ", InIIS);
             ConfigFile = @".\" + AppPoolId + ".xml";
+            _mainTrace.TraceEvent(TraceEventType.Information, 1013, "ConfigFile {0} ", ConfigFile);
             QueryString =  Environment.GetEnvironmentVariable("QUERY_STRING");
+            _mainTrace.TraceEvent(TraceEventType.Information, 1014, "ConfigFile {0} ", ConfigFile);
         }
 
         static FileStream CreateFileWithUniqueName(string folder, string fileName,int maxAttempts = 1024)
