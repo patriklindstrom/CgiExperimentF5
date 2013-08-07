@@ -66,24 +66,34 @@ namespace F5
         {
             try
             {
-                _mainTrace.TraceEvent(TraceEventType.Information, 2020, "Save Config file to disk");
+                _mainTrace.TraceEvent(TraceEventType.Information, 2210, "Save Config file to disk");
                 var x = new XmlSerializer(Tests.GetType(), "http://www.lcube.se/alivetest.xsd");
                 Console.WriteLine("Give Path to file");
                 string pathString = Console.ReadLine();
                 //ConfigFileName = pathString + "\\" + ConfigFileName;
                 if (pathString != null) ConfigFileName = Path.Combine(pathString, ConfigFileName);
-                _mainTrace.TraceEvent(TraceEventType.Information, 2021, "Save Config file to disk: {0}", ConfigFileName);
+                _mainTrace.TraceEvent(TraceEventType.Information, 2211, "Save Config file to disk: {0}", ConfigFileName);
                 Console.WriteLine("outputpath {0}", ConfigFileName);
                 var writer = new StreamWriter(ConfigFileName);
                 x.Serialize(writer, Tests);
                 writer.Flush();
-                writer.Close(); 
+                writer.Close();
+                _mainTrace.TraceEvent(TraceEventType.Information, 2212, "Saved Config file to disk: {0}", ConfigFileName);
             }
             catch (Exception e)
             {
+                string  errorMsg = "Could not Save XML Config file to disk. ErrorMessage: " + e.Message;
+                _mainTrace.TraceEvent(TraceEventType.Critical, 9001, "Could not Save XML Config file to disk. ErrorMessage: {0}" , e.Message);
+                _mainTrace.Flush();
+                Console.WriteLine(errorMsg);
+                Console.Beep();
+                Console.WriteLine("Try other Path? [y]");
 
-                _mainTrace.TraceEvent(TraceEventType.Critical,5001,"Could not Save XML Config file to disk" + e.Message);
-                throw;
+              var  answer = Console.ReadLine();
+                if (answer=="y")
+                {
+                    SaveToFile();
+                }
             }
           
         }
