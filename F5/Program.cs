@@ -18,6 +18,7 @@ namespace F5
     public class Program
     {
         static TraceSource _mainTrace = new TraceSource("MainLog");
+        static TraceSource _configTrace = new TraceSource("ConfigLog");
         private static void Main(string[] args)
         {
             // Trace start
@@ -29,7 +30,9 @@ namespace F5
             _mainTrace.TraceEvent(TraceEventType.Information, 1020, "Get TestListConfig.");
             var allTestToDo = new TestListConfig(space);
            TestController testController;
+           _mainTrace.TraceEvent(TraceEventType.Information, 1030, "Decide Program mode.");
            RunRightModeOfProgram(space, allTestToDo, out testController);
+           _mainTrace.TraceEvent(TraceEventType.Stop, 1090, "Program Stop.");
            Trace.CorrelationManager.StopLogicalOperation();
         }
 
@@ -42,10 +45,12 @@ namespace F5
 
                 allTestToDo.GetTestList();
                 testController = new TestController();
+                _mainTrace.TraceEvent(TraceEventType.Information, 1031, "Be a CGI program.");
                 BeCgi(allTestToDo, testController);
             }
             else
             {
+                _mainTrace.TraceEvent(TraceEventType.Information, 1032, "Be a CGI program.");
                 BeCmdLine(space);
             }
         }
@@ -58,6 +63,7 @@ namespace F5
                 string answere = Console.ReadLine();
                 if (String.Compare(answere, "y", StringComparison.OrdinalIgnoreCase) == 0)
                 {
+                    _mainTrace.TraceEvent(TraceEventType.Information, 1033, "Lets Do a commandLineSession");
                     CreateConfigFromConsoleMain(space);
                 }
             }
@@ -87,6 +93,7 @@ namespace F5
 
         private static void CreateConfigFromConsoleMain(IRunSpace space)
         {
+             _configTrace.TraceEvent(TraceEventType.Start, 2230, "Enter CreateConfigFromConsoleMain with space {0}.",space.ToString());
             Console.WriteLine("Enter Name of Application pool?");
             string applPool = Console.ReadLine();
             if (!String.IsNullOrEmpty(applPool))
@@ -103,6 +110,7 @@ namespace F5
                     Console.WriteLine("Done/Save config file press Enter");
                     choice = Console.ReadLine();
                     IAliveTest test = null;
+                    _configTrace.TraceEvent(TraceEventType.Information, 2231, "Choice of config {0}.", choice);
                     switch (choice)
                     {
                         case "0":
@@ -124,14 +132,19 @@ namespace F5
                     }
                     if (test != null)
                     {
+                        _configTrace.TraceEvent(TraceEventType.Information, 2231, "CreateConfigFromConsole.");
+                        _configTrace.TraceEvent(TraceEventType.Information, 2232, "Create Test of type: {0}",test.GetType().ToString());
                         test.CreateConfigFromConsole();
+                        
                         testListConfig.Tests.Add(test);
+                        _configTrace.TraceEvent(TraceEventType.Information, 2233, "Added Test: {0}", test.GetType().ToString());
                     }
 
                 }
                 testListConfig.SaveToFile();
                 Console.WriteLine("Press Enter to Exit");
                 choice = Console.ReadLine();
+                _configTrace.TraceEvent(TraceEventType.Stop, 2239, "Stop Creating configfile.");
 
             }
         }
