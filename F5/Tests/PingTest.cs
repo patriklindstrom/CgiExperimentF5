@@ -46,7 +46,7 @@ namespace F5.Tests
                 {
                     // not correct hostname
                     _cgiTrace.TraceEvent(TraceEventType.Error, 9401, "Config Error in Pingtest No Such host as: {0} ",PingAddress);
-                    Console.WriteLine("No Such host as: {0} " , PingAddress);
+                    Console.WriteLine("Config Error in Pingtest No Such host as: {0} ", PingAddress);
                 }
                 else
                 {
