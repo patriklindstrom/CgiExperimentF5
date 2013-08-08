@@ -6,7 +6,7 @@ namespace F5.Tests
 {
     public class PingTest : IAliveTest
     {
-        static TraceSource _cgiTrace = new TraceSource("DoTestLog");
+        static TraceSource _cgiTrace = new TraceSource("cgilog");
         public string PingAddress { get; set; }
         private static long Ping(string hostname)
         {

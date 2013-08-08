@@ -19,7 +19,7 @@ namespace F5
     {
         static TraceSource _mainTrace = new TraceSource("MainLog");
         static TraceSource _configTrace = new TraceSource("ConfigLog");
-        static TraceSource _cgiTrace = new TraceSource("DoTestLog");
+        static TraceSource _cgiTrace = new TraceSource("cgilog");
         private static void Main(string[] args)
         {
             // Trace start
