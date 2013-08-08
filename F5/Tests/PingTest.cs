@@ -41,13 +41,18 @@ namespace F5.Tests
             catch (Exception e)
             {
                 _cgiTrace.TraceEvent(TraceEventType.Error, 9401, "Ping Test error. ErrorMessage: " + e.Message);
-                if (e.Message == "Foo")
+                System.Net.Sockets.SocketException innerException = (System.Net.Sockets.SocketException) e.InnerException;
+                if (innerException.ErrorCode == 11001)
                 {
                     // not correct hostname
-                    _cgiTrace.TraceEvent(TraceEventType.Error, 9401, "Ping Test error.");
-
+                    _cgiTrace.TraceEvent(TraceEventType.Error, 9401, "No Such host as: {0} ",PingAddress);
+                    Console.WriteLine("No Such host as: {0} " , PingAddress);
                 }
-                throw;
+                else
+                {
+                    throw;
+                }
+                
             }
 
            
