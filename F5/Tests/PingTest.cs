@@ -6,6 +6,7 @@ namespace F5.Tests
 {
     public class PingTest : IAliveTest
     {
+        static TraceSource _cgiTrace = new TraceSource("DoTestLog");
         public string PingAddress { get; set; }
         private static long Ping(string hostname)
         {
@@ -16,19 +17,23 @@ namespace F5.Tests
         }
         public bool IsAlive()
         {
+            _cgiTrace.TraceEvent(TraceEventType.Start, 2400, "Ping Test Start.");
             bool alive = false;
            
            long pingTime= Ping(PingAddress);
             //Special for localhost is mostly zero in time
             if (pingTime ==0 && String.Compare(PingAddress, "localhost", StringComparison.OrdinalIgnoreCase)==0)
             {
+                _cgiTrace.TraceEvent(TraceEventType.Information, 2405, "Localhost ping fake time", pingTime.ToString());
                 alive = true;
             }
             // Normal ping time
            if (pingTime>0)
             {
+                _cgiTrace.TraceEvent(TraceEventType.Information, 2405, "Normal ping took place");
                 alive = true;
             }
+            _cgiTrace.TraceEvent(TraceEventType.Stop, 2401, "Ping Test Stop. Ping in {0}",pingTime.ToString());
             return alive;
         }
 

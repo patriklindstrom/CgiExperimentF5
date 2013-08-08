@@ -102,7 +102,9 @@
     <Compile Include="TestListConfig.cs" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="App.config" />
+    <None Include="App.config">
+      <SubType>Designer</SubType>
+    </None>
     <None Include="CGIF5StrongKeyName.snk" />
     <None Include="F5_1_TemporaryKey.pfx" />
     <None Include="F5_TemporaryKey.pfx" />
