@@ -45,7 +45,7 @@ namespace F5.Tests
                 if (innerException.ErrorCode == 11001)
                 {
                     // not correct hostname
-                    _cgiTrace.TraceEvent(TraceEventType.Error, 9401, "No Such host as: {0} ",PingAddress);
+                    _cgiTrace.TraceEvent(TraceEventType.Error, 9401, "Config Error in Pingtest No Such host as: {0} ",PingAddress);
                     Console.WriteLine("No Such host as: {0} " , PingAddress);
                 }
                 else
