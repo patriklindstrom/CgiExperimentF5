@@ -17,23 +17,42 @@ namespace F5.Tests
         }
         public bool IsAlive()
         {
+           // 11001
             _cgiTrace.TraceEvent(TraceEventType.Start, 2400, "Ping Test Start.");
             bool alive = false;
+            long pingTime = 0; 
+            try
+            {
+                pingTime =  Ping(PingAddress);
+                //Special for localhost is mostly zero in time
+                if (pingTime == 0 && String.Compare(PingAddress, "localhost", StringComparison.OrdinalIgnoreCase) == 0)
+                {
+                    _cgiTrace.TraceEvent(TraceEventType.Information, 2405, "Localhost ping fake time", pingTime.ToString());
+                    alive = true;
+                }
+                // Normal ping time
+                if (pingTime > 0)
+                {
+                    _cgiTrace.TraceEvent(TraceEventType.Information, 2405, "Normal ping took place");
+                    alive = true;
+                }
+                _cgiTrace.TraceEvent(TraceEventType.Stop, 2401, "Ping Test Stop. Ping in {0}", pingTime.ToString());
+            }
+            catch (Exception e)
+            {
+                _cgiTrace.TraceEvent(TraceEventType.Error, 9401, "Ping Test error. ErrorMessage: " + e.Message);
+                if (e.Message == "Foo")
+                {
+                    // not correct hostname
+                    _cgiTrace.TraceEvent(TraceEventType.Error, 9401, "Ping Test error.");
+
+                }
+                throw;
+            }
+
            
-           long pingTime= Ping(PingAddress);
-            //Special for localhost is mostly zero in time
-            if (pingTime ==0 && String.Compare(PingAddress, "localhost", StringComparison.OrdinalIgnoreCase)==0)
-            {
-                _cgiTrace.TraceEvent(TraceEventType.Information, 2405, "Localhost ping fake time", pingTime.ToString());
-                alive = true;
-            }
-            // Normal ping time
-           if (pingTime>0)
-            {
-                _cgiTrace.TraceEvent(TraceEventType.Information, 2405, "Normal ping took place");
-                alive = true;
-            }
-            _cgiTrace.TraceEvent(TraceEventType.Stop, 2401, "Ping Test Stop. Ping in {0}",pingTime.ToString());
+           
+           
             return alive;
         }
 
