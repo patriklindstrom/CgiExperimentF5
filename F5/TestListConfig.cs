@@ -30,36 +30,45 @@ namespace F5
 
         public void GetTestList()
         {
-            XDocument doc = XDocument.Load(ConfigFileName);
-            if (doc.Root != null)
+            if (File.Exists(ConfigFileName))
             {
-                IEnumerable<XElement> testList = doc.Root.Elements();
-                _mainTrace.TraceEvent(TraceEventType.Information, 1022, "Start Adding testcases to testlist");
-                foreach (var iAliveTest in testList)
+                XDocument doc = XDocument.Load(ConfigFileName);
+                if (doc.Root != null)
                 {
-                    var test = iAliveTest.Descendants().First();
-                    if (test.Name == "DatabaseConnTest")
+                    IEnumerable<XElement> testList = doc.Root.Elements();
+                    _mainTrace.TraceEvent(TraceEventType.Information, 1022, "Start Adding testcases to testlist");
+                    foreach (var iAliveTest in testList)
                     {
-                        var xElement = test.Element("ConnString");
-                        if (xElement != null)
+                        var test = iAliveTest.Descendants().First();
+                        if (test.Name == "DatabaseConnTest")
                         {
-                            Tests.Add(new DatabaseConnTest {ConnString = xElement.Value});
-                            _mainTrace.TraceEvent(TraceEventType.Information, 1021, "Add ConnString {0} ",
-                                                  xElement.Value);
+                            var xElement = test.Element("ConnString");
+                            if (xElement != null)
+                            {
+                                Tests.Add(new DatabaseConnTest {ConnString = xElement.Value});
+                                _mainTrace.TraceEvent(TraceEventType.Information, 1021, "Add ConnString {0} ",
+                                    xElement.Value);
+                            }
+                        }
+                        if (test.Name == "PingTest")
+                        {
+                            var xElement = test.Element("PingAddress");
+                            if (xElement != null)
+                            {
+                                Tests.Add(new PingTest {PingAddress = xElement.Value});
+                                _mainTrace.TraceEvent(TraceEventType.Information, 1022, "Add PingAddress {0} ",
+                                    xElement.Value);
+                            }
                         }
                     }
-                    if (test.Name == "PingTest")
-                    {
-                        var xElement = test.Element("PingAddress");
-                        if (xElement != null){
-                            Tests.Add(new PingTest { PingAddress = xElement.Value });
-                            _mainTrace.TraceEvent(TraceEventType.Information, 1022, "Add PingAddress {0} ",
-                                                  xElement.Value);
-                        }
-                    }
+                    _mainTrace.TraceEvent(TraceEventType.Information, 1023, "Added number of test {0} ",
+                        Tests.Count);
                 }
-                _mainTrace.TraceEvent(TraceEventType.Information, 1023, "Added number of test {0} ",
-                                                  Tests.Count);
+            }
+            else
+            {
+                _mainTrace.TraceEvent(TraceEventType.Information, 1024, "Cant find test configfile {0} ",
+                       ConfigFileName);
             }
         }
         public void SaveToFile()

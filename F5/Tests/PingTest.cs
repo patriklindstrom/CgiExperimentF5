@@ -17,30 +17,34 @@ namespace F5.Tests
         }
         public bool IsAlive()
         {
-           // 11001
+           
             _cgiTrace.TraceEvent(TraceEventType.Start, 2400, "Ping Test Start.");
             bool alive = false;
-            long pingTime = 0; 
+            long pingTime = -1; 
             try
             {
+                _cgiTrace.TraceEvent(TraceEventType.Information, 2403, "Before ping call");
                 pingTime =  Ping(PingAddress);
+                _cgiTrace.TraceEvent(TraceEventType.Information, 2404, "After ping call");
                 //Special for localhost is mostly zero in time
                 if (pingTime == 0 && String.Compare(PingAddress, "localhost", StringComparison.OrdinalIgnoreCase) == 0)
                 {
-                    _cgiTrace.TraceEvent(TraceEventType.Information, 2405, "Localhost ping fake time", pingTime.ToString());
+                    _cgiTrace.TraceEvent(TraceEventType.Information, 2405, "Localhost ping fake time {0}", pingTime.ToString());
                     alive = true;
                 }
                 // Normal ping time
-                if (pingTime > 0)
+                if (pingTime > -1)
                 {
-                    _cgiTrace.TraceEvent(TraceEventType.Information, 2405, "Normal ping took place");
+                    _cgiTrace.TraceEvent(TraceEventType.Information, 2406, "Normal ping took place");
                     alive = true;
                 }
-                _cgiTrace.TraceEvent(TraceEventType.Stop, 2401, "Ping Test Stop. Ping in {0}", pingTime.ToString());
+                _cgiTrace.TraceEvent(TraceEventType.Information, 2407, "Alive Status id {0}", alive.ToString());
+                _cgiTrace.TraceEvent(TraceEventType.Stop, 2408, "Ping Test Stop. Ping in {0}", pingTime.ToString());
+
             }
             catch (Exception e)
             {
-                _cgiTrace.TraceEvent(TraceEventType.Error, 9401, "Ping Test error. ErrorMessage: " + e.Message);
+                _cgiTrace.TraceEvent(TraceEventType.Error, 9401, "Ping Test error. ErrorMessage: {0}" + e.Message);
                 System.Net.Sockets.SocketException innerException = (System.Net.Sockets.SocketException) e.InnerException;
                 if (innerException.ErrorCode == 11001)
                 {

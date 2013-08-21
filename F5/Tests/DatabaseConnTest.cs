@@ -1,10 +1,12 @@
 ﻿using System;
 using System.Data.SqlClient;
+using System.Diagnostics;
 
 namespace F5.Tests
 {
     public class DatabaseConnTest : IAliveTest
     {
+        static TraceSource _cgiTrace = new TraceSource("cgilog");
         private const string DefTestSQL = "Select @@version;";
         private const string DefTestSQLResultContains = "Microsoft";
 
@@ -20,31 +22,41 @@ namespace F5.Tests
 
         public  string ConnString { get; set; }
 
+
         private static bool TestDB(string cnstr)
         {
             bool dbWorks = false;
             try
             {
+                _cgiTrace.TraceEvent(TraceEventType.Start, 2500, "SQL Test Start.");
                 using (var connection =
                     new SqlConnection(cnstr))
                 {
+                    _cgiTrace.TraceEvent(TraceEventType.Information, 2403, "Before SQL call of {0}", TestSQL);
                     var command = new SqlCommand(TestSQL, connection);
                     connection.Open();
                     var qResult = command.ExecuteScalar();
                     if (qResult != null)
                     {
                         string qResultStr = qResult.ToString();
+                        _cgiTrace.TraceEvent(TraceEventType.Information, 2506, "Result from TestSQLQuery: {0} ", qResultStr);
+                        _cgiTrace.TraceEvent(TraceEventType.Information, 2507, "TestSQLResultContains {0}", TestSQLResultContains);
                         if (qResultStr.Contains(TestSQLResultContains))
-                        {
-                            dbWorks = true;
+                        {                           
+                            dbWorks = true;                            
                         }
+                        _cgiTrace.TraceEvent(TraceEventType.Information, 2508, "dbWorks was {0} ", dbWorks.ToString());
                     }
                     connection.Close();
+                    _cgiTrace.TraceEvent(TraceEventType.Information, 2509, "DB Connection closed and Alive Status id {0}", dbWorks.ToString());
+                    _cgiTrace.TraceEvent(TraceEventType.Stop, 2500, "SQL Test Stop.");
                 }
             }
-            catch (Exception)
+            catch (Exception e)
             {
+                _cgiTrace.TraceEvent(TraceEventType.Error, 9501, "SQL Test error. ErrorMessage: " + e.Message);
                 dbWorks = false;
+                
             }
 
             return dbWorks;
