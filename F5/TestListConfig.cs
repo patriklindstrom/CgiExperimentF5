@@ -67,8 +67,15 @@ namespace F5
             }
             else
             {
-                _mainTrace.TraceEvent(TraceEventType.Information, 1024, "Cant find test configfile {0} ",
+                _mainTrace.TraceEvent(TraceEventType.Error, 9024, "Cant find test configfile {0} ",
                        ConfigFileName);
+                Console.WriteLine("\r\n\r\n");
+                Console.WriteLine("<html>");
+                Console.WriteLine("<div style='color:red;'>");
+                Console.WriteLine("Cant find test configfile {0}", ConfigFileName);
+                Console.WriteLine("</div>");
+                Console.WriteLine("</html>");
+                throw new FileNotFoundException("Cant find test configfile", ConfigFileName);
             }
         }
         public void SaveToFile()
