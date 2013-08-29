@@ -82,11 +82,17 @@ namespace F5
                 Console.WriteLine("<div style='color:green;'>");
                 Console.WriteLine("Alive");
                 Console.WriteLine("</div>");
+                Console.WriteLine("<div style='color:green;'>");
+                Console.WriteLine(DateTime.Now.ToString("O"));
+                Console.WriteLine("</div>");
             }
             else
             {
                 Console.WriteLine("<div style='color:red;'>");
                 Console.WriteLine("Dead");
+                Console.WriteLine("</div>");
+                Console.WriteLine("<div style='color:red;'>");
+                Console.WriteLine(DateTime.Now.ToString("O"));
                 Console.WriteLine("</div>");
             }
             Console.WriteLine("</html>");
